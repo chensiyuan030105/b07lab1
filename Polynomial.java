@@ -19,8 +19,16 @@ public class Polynomial {
         double[] resultCoeffs = new double[maxLen];
 
         for (int i = 0; i < maxLen; i++) {
-            double a = i < this.coeffs.length ? this.coeffs[i] : 0;
-            double b = i < other.coeffs.length ? other.coeffs[i] : 0;
+            double a = 0;
+            double b = 0;
+            if(i < this.coeffs.length)
+                a = this.coeffs[i];
+            else
+                a = 0;
+            if(i < other.coeffs.length)
+                b = other.coeffs[i];
+            else
+                b = 0;
             resultCoeffs[i] = a + b;
         }
 
@@ -30,8 +38,8 @@ public class Polynomial {
     // Method to evaluate the polynomial at a given value of x
     public double evaluate(double x) {
         double result = 0.0;
-        for (int i = coeffs.length - 1; i >= 0; i--) {
-            result = result * x + coeffs[i];
+        for (int i = 0; i <= coeffs.length - 1; i++) {
+            result = result + coeffs[i] * Math.pow(x, i);
         }
         return result;
     }
