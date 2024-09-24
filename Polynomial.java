@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class Polynomial {
     // Array to store polynomial coefficients
@@ -16,7 +20,7 @@ public class Polynomial {
         this.coeffs = new double[1]; // Represents the zero polynomial
         this.exponents = new double[1]; // Represents the zero polynomial
     }
-    
+
     public Polynomial(File file) throws IOException {
         String polynomialString = new String(Files.readAllBytes(file.toPath())).trim();
         parsePolynomial(polynomialString);
@@ -33,9 +37,11 @@ public class Polynomial {
         while (matcher.find()) {
             String coeffStr = matcher.group(1);
             String xPart = matcher.group(2);
-            double coeff = coeffStr.isEmpty() || coeffStr.equals("+") ? 1.0 : coeffStr.equals("-") ? -1.0 : Double.parseDouble(coeffStr);
+            double coeff = coeffStr.equals("+") ? 1.0 : coeffStr.equals("-") ? -1.0 : coeffStr.isEmpty() ? 0.0 : Double.parseDouble(coeffStr);
             double exponent = (xPart != null && matcher.group(3) != null) ? Double.parseDouble(matcher.group(3)) : 0.0;
-
+            if(coeff == 0){
+                continue;
+            }
             // Store the coefficient and exponent
             resultCoeffs.add(coeff);
             resultExponents.add(exponent);
@@ -130,8 +136,58 @@ public class Polynomial {
         return result;
     }
 
+    public String getCoefficient(int i) {
+        double coefficient = coeffs[i];
+        // Check if the coefficient is an integer value
+        if (coefficient == (int) coefficient) {
+            return String.valueOf((int) coefficient); // Return as integer
+        } else {
+            return String.valueOf(coefficient); // Return as double
+        }
+    }
+
+    public String getExponent(int i) {
+        double exponent = exponents[i];
+        // Check if the coefficient is an integer value
+        if (exponent == (int) exponent) {
+            return String.valueOf((int) exponent); // Return as integer
+        } else {
+            return String.valueOf(exponent); // Return as double
+        }
+    }
+
     // Method to check if a given value is a root of the polynomial
     public boolean hasRoot(double x) {
         return evaluate(x) == 0;
+    }
+
+    public void saveToFile(String filename) {
+        StringBuilder polynomialString = new StringBuilder();
+        for (int i = 0; i <= coeffs.length - 1; i++) {
+            if(coeffs[i] > 0){
+                if(i != 0){
+                    polynomialString.append("+");                    
+                }
+                polynomialString.append(getCoefficient(i));
+                if(exponents[i] != 0){
+                    polynomialString.append("x");                    
+                    polynomialString.append(getExponent(i));                    
+                }
+            }
+            else{
+                polynomialString.append(getCoefficient(i));
+                if(exponents[i] != 0){
+                    polynomialString.append("x");                    
+                    polynomialString.append(getExponent(i));                    
+                }
+            }
+        }        
+
+        // Write the polynomial string to the specified file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write(polynomialString.toString());
+        } catch (IOException e) {
+            System.err.println("Error saving polynomial to file: " + e.getMessage());
+        }
     }
 }

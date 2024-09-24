@@ -1,5 +1,15 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Driver { 
-    public static void main(String [] args) { 
+    public static void main(String [] args) throws IOException { 
         Polynomial p = new Polynomial(); 
         System.out.println(p.evaluate(3)); 
         double [] c1 = {6,5}; 
@@ -15,6 +25,10 @@ public class Driver {
         else 
             System.out.println("1 is not a root of s"); 
         Polynomial s2 = p1.multiply(p2);
-        System.out.println("s2(1) = " + s2.evaluate(1));              
+        System.out.println("s2(1) = " + s2.evaluate(1));           
+
+        File file = new File("./test1.txt");
+        Polynomial polynomial = new Polynomial(file); 
+        polynomial.saveToFile("./output1.txt");
     } 
 } 
